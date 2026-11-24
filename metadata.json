@@ -1,0 +1,8 @@
+{
+  "name": "CampusCrew — Skill-Based Volunteer Allocation & Event Workforce System",
+  "description": "CSA0302 Data Structures Capstone: Skill-based volunteer allocation and real-time event workforce management powered by a modular C data structures engine.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
