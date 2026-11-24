@@ -35,6 +35,12 @@ export function loadDatabase(): AppDatabase {
     if (!parsed || !Array.isArray(parsed.events) || !Array.isArray(parsed.volunteers)) {
       throw new Error('Corrupt db');
     }
+    const defaultEventId = parsed.events[0]?.id || 'EVT-2026';
+    for (const v of parsed.volunteers) {
+      if (!v.eventId) {
+        v.eventId = defaultEventId;
+      }
+    }
     return parsed;
   } catch {
     const seeded = structuredClone(initialSeedDatabase);
@@ -62,6 +68,7 @@ export function syncTaskStatuses(db: AppDatabase): void {
 
     const assigned = db.volunteers.filter(
       (v) =>
+        v.eventId === task.eventId &&
         v.assignedTaskId === task.id &&
         (v.status === 'Assigned' ||
           v.status === 'Working' ||
@@ -236,12 +243,14 @@ export function createVolunteerRecord(
   db: AppDatabase,
   payload: Partial<VolunteerRecord>
 ): VolunteerRecord {
+  const targetEventId = String(payload.eventId || db.activeEventId);
+  const eventVolunteers = db.volunteers.filter((v) => v.eventId === targetEventId);
   const id =
     payload.id && String(payload.id).trim()
       ? String(payload.id).trim()
       : nextSequentialId(
           'VOL',
-          db.volunteers.map((v) => v.id)
+          eventVolunteers.map((v) => v.id)
         );
   const avail = validateAvailability(payload.availability);
   const status =
@@ -251,6 +260,7 @@ export function createVolunteerRecord(
 
   return {
     id,
+    eventId: targetEventId,
     name: String(payload.name || '').trim(),
     email: String(payload.email || '').trim(),
     contact: String(payload.contact || '').trim(),

@@ -29,12 +29,15 @@ export function VolunteerManagementPage({
   const [search, setSearch] = useState('');
   const [reassignTargets, setReassignTargets] = useState<Record<string, string>>({});
 
+  const eventVolunteers = db.volunteers.filter((v) => v.eventId === db.activeEventId);
   const activeTasks = db.tasks.filter(
     (t) => t.eventId === db.activeEventId && t.status !== 'Completed'
   );
-  const taskMap = new Map(db.tasks.map((t) => [t.id, t]));
+  const taskMap = new Map(
+    db.tasks.filter((t) => t.eventId === db.activeEventId).map((t) => [t.id, t])
+  );
 
-  const reassignmentQueue = db.volunteers.filter(
+  const reassignmentQueue = eventVolunteers.filter(
     (v) => v.status === 'Reassignment Requested'
   );
 
@@ -58,7 +61,7 @@ export function VolunteerManagementPage({
     }
   };
 
-  const filtered = db.volunteers.filter((v) => {
+  const filtered = eventVolunteers.filter((v) => {
     const matchTab = statusTab === 'All' || v.status === statusTab;
     const q = search.trim().toLowerCase();
     if (!q) return matchTab;
@@ -176,7 +179,7 @@ export function VolunteerManagementPage({
               />
             </div>
             <span className="text-xs text-slate-500 font-mono tabular-nums">
-              Showing {filtered.length} of {db.volunteers.length} volunteers
+              Showing {filtered.length} of {eventVolunteers.length} volunteers
             </span>
           </div>
 

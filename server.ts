@@ -147,19 +147,10 @@ async function startServer() {
       const removedId = db.events[idx].id;
       db.events.splice(idx, 1);
 
-      const removedTaskIds = new Set(
-        db.tasks.filter((t) => t.eventId === removedId).map((t) => t.id)
-      );
       db.tasks = db.tasks.filter((t) => t.eventId !== removedId);
       db.allocations = db.allocations.filter((a) => a.eventId !== removedId);
-      for (const v of db.volunteers) {
-        if (removedTaskIds.has(v.assignedTaskId)) {
-          v.assignedTaskId = '';
-          if (v.status === 'Assigned' || v.status === 'Working' || v.status === 'Reassignment Requested') {
-            v.status = v.availability === 'Unavailable' ? 'Unavailable' : 'Available';
-          }
-        }
-      }
+      db.volunteers = db.volunteers.filter((v) => v.eventId !== removedId);
+
       if (db.activeEventId === removedId) {
         db.activeEventId = db.events[0].id;
       }
@@ -189,12 +180,24 @@ async function startServer() {
       }
 
       const db = loadDatabase();
-      if (body.id && db.volunteers.some((v) => v.id === String(body.id).trim())) {
-        res.status(409).json({ error: `Volunteer ID ${body.id} already exists.` });
+      const targetEventId =
+        typeof body.eventId === 'string' && body.eventId.trim()
+          ? body.eventId.trim()
+          : db.activeEventId;
+
+      if (
+        body.id &&
+        db.volunteers.some(
+          (v) => v.eventId === targetEventId && v.id === String(body.id).trim()
+        )
+      ) {
+        res.status(409).json({
+          error: `Volunteer ID ${body.id} already exists in this event.`,
+        });
         return;
       }
 
-      const volunteer = createVolunteerRecord(db, body);
+      const volunteer = createVolunteerRecord(db, { ...body, eventId: targetEventId });
       db.volunteers.push(volunteer);
       saveDatabase(db);
       const liveStats = await getLiveStatsFromC(db, db.activeEventId);
@@ -239,6 +242,10 @@ async function startServer() {
       }
 
       const db = loadDatabase();
+      const targetEventId =
+        typeof req.body?.eventId === 'string' && req.body.eventId.trim()
+          ? req.body.eventId.trim()
+          : db.activeEventId;
       let added = 0;
       let updated = 0;
       let skipped = 0;
@@ -261,8 +268,15 @@ async function startServer() {
         const preferredSlot = colSlot !== -1 ? (r[colSlot] || 'Full Day').trim() : 'Full Day';
 
         const existing = rawId
-          ? db.volunteers.find((v) => v.id.toLowerCase() === rawId.toLowerCase())
-          : db.volunteers.find((v) => email && v.email.toLowerCase() === email.toLowerCase());
+          ? db.volunteers.find(
+              (v) => v.eventId === targetEventId && v.id.toLowerCase() === rawId.toLowerCase()
+            )
+          : db.volunteers.find(
+              (v) =>
+                v.eventId === targetEventId &&
+                email &&
+                v.email.toLowerCase() === email.toLowerCase()
+            );
 
         if (existing) {
           existing.name = name;
@@ -278,8 +292,12 @@ async function startServer() {
           }
           updated++;
         } else {
+          const eventVolunteerIds = db.volunteers
+            .filter((v) => v.eventId === targetEventId)
+            .map((v) => v.id);
           const vol = createVolunteerRecord(db, {
-            id: rawId || nextSequentialId('VOL', db.volunteers.map((v) => v.id)),
+            id: rawId || nextSequentialId('VOL', eventVolunteerIds),
+            eventId: targetEventId,
             name,
             email: email || `${name.toLowerCase().replace(/[^a-z0-9]/g, '.')}@college.edu`,
             contact: contact || 'N/A',
@@ -307,12 +325,18 @@ async function startServer() {
   app.patch('/api/volunteers/:id', async (req, res) => {
     try {
       const db = loadDatabase();
-      const vol = db.volunteers.find((v) => v.id === req.params.id);
+      const b = req.body ?? {};
+      const targetEventId =
+        typeof b.eventId === 'string' && b.eventId.trim()
+          ? b.eventId.trim()
+          : db.activeEventId;
+      const vol = db.volunteers.find(
+        (v) => v.eventId === targetEventId && v.id === req.params.id
+      );
       if (!vol) {
-        res.status(404).json({ error: 'Volunteer not found.' });
+        res.status(404).json({ error: 'Volunteer not found in the active event.' });
         return;
       }
-      const b = req.body ?? {};
       if (typeof b.name === 'string' && b.name.trim()) vol.name = b.name.trim();
       if (typeof b.email === 'string' && b.email.trim()) vol.email = b.email.trim();
       if (typeof b.contact === 'string') vol.contact = b.contact.trim();
@@ -350,9 +374,15 @@ async function startServer() {
   app.delete('/api/volunteers/:id', async (req, res) => {
     try {
       const db = loadDatabase();
-      const idx = db.volunteers.findIndex((v) => v.id === req.params.id);
+      const targetEventId =
+        typeof req.query.eventId === 'string' && req.query.eventId.trim()
+          ? req.query.eventId.trim()
+          : db.activeEventId;
+      const idx = db.volunteers.findIndex(
+        (v) => v.eventId === targetEventId && v.id === req.params.id
+      );
       if (idx === -1) {
-        res.status(404).json({ error: 'Volunteer not found.' });
+        res.status(404).json({ error: 'Volunteer not found in the active event.' });
         return;
       }
       db.volunteers.splice(idx, 1);
@@ -368,9 +398,15 @@ async function startServer() {
   app.post('/api/volunteers/:id/status', async (req, res) => {
     try {
       const db = loadDatabase();
-      const vol = db.volunteers.find((v) => v.id === req.params.id);
+      const targetEventId =
+        typeof req.body?.eventId === 'string' && req.body.eventId.trim()
+          ? req.body.eventId.trim()
+          : db.activeEventId;
+      const vol = db.volunteers.find(
+        (v) => v.eventId === targetEventId && v.id === req.params.id
+      );
       if (!vol) {
-        res.status(404).json({ error: 'Volunteer not found.' });
+        res.status(404).json({ error: 'Volunteer not found in the active event.' });
         return;
       }
 
@@ -380,6 +416,7 @@ async function startServer() {
       const findActiveAlloc = () =>
         db.allocations.find(
           (a) =>
+            a.eventId === vol.eventId &&
             a.volunteerId === vol.id &&
             a.taskId === vol.assignedTaskId &&
             (a.status === 'Assigned' || a.status === 'Working')
@@ -564,13 +601,13 @@ async function startServer() {
       if (task.status === 'Completed') {
         const now = new Date().toISOString();
         for (const v of db.volunteers) {
-          if (v.assignedTaskId === task.id) {
+          if (v.eventId === task.eventId && v.assignedTaskId === task.id) {
             v.assignedTaskId = '';
             v.status = 'Completed';
           }
         }
         for (const a of db.allocations) {
-          if (a.taskId === task.id && (a.status === 'Assigned' || a.status === 'Working')) {
+          if (a.eventId === task.eventId && a.taskId === task.id && (a.status === 'Assigned' || a.status === 'Working')) {
             a.status = 'Completed';
             if (!a.checkInTime) a.checkInTime = now;
             a.completionTime = now;
@@ -596,11 +633,13 @@ async function startServer() {
         res.status(404).json({ error: 'Task not found.' });
         return;
       }
-      const taskId = db.tasks[idx].id;
+      const task = db.tasks[idx];
+      const taskId = task.id;
+      const taskEventId = task.eventId;
       db.tasks.splice(idx, 1);
 
       for (const v of db.volunteers) {
-        if (v.assignedTaskId === taskId) {
+        if (v.eventId === taskEventId && v.assignedTaskId === taskId) {
           v.assignedTaskId = '';
           if (v.status === 'Assigned' || v.status === 'Working' || v.status === 'Reassignment Requested') {
             v.status = v.availability === 'Unavailable' ? 'Unavailable' : 'Available';
@@ -640,17 +679,18 @@ async function startServer() {
       }
 
       const db = loadDatabase();
-      const check = await verifyAllocationWithC(db, db.activeEventId, String(volunteerId), String(taskId));
+      const task = db.tasks.find((t) => t.id === taskId && t.eventId === db.activeEventId) || db.tasks.find((t) => t.id === taskId);
+      const targetEventId = task?.eventId || db.activeEventId;
+      const check = await verifyAllocationWithC(db, targetEventId, String(volunteerId), String(taskId));
       if (!check.allowed) {
         res.status(400).json({ error: check.reason || 'Allocation rejected by C engine.' });
         return;
       }
 
-      const vol = db.volunteers.find((v) => v.id === volunteerId);
-      const task = db.tasks.find((t) => t.id === taskId);
-      const event = db.events.find((e) => e.id === (task?.eventId || db.activeEventId));
+      const vol = db.volunteers.find((v) => v.id === volunteerId && v.eventId === targetEventId);
+      const event = db.events.find((e) => e.id === targetEventId);
       if (!vol || !task || !event) {
-        res.status(404).json({ error: 'Volunteer, task, or event not found.' });
+        res.status(404).json({ error: 'Volunteer, task, or event not found in the selected event.' });
         return;
       }
 

@@ -132,6 +132,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-101',
       name: 'Aarav Sharma',
+      eventId: 'EVT-2026',
       email: 'aarav.sharma@college.edu',
       contact: '9845011201',
       preferredTasks: 'Registration Management, Hospitality',
@@ -146,6 +147,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-102',
       name: 'Diya Nair',
+      eventId: 'EVT-2026',
       email: 'diya.nair@college.edu',
       contact: '9845011202',
       preferredTasks: 'Registration Management, Certificate Distribution',
@@ -160,6 +162,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-103',
       name: 'Rohan Kulkarni',
+      eventId: 'EVT-2026',
       email: 'rohan.k@college.edu',
       contact: '9845011203',
       preferredTasks: 'Registration Management',
@@ -174,6 +177,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-104',
       name: 'Ananya Iyer',
+      eventId: 'EVT-2026',
       email: 'ananya.iyer@college.edu',
       contact: '9845011204',
       preferredTasks: 'Food Management, Hospitality',
@@ -188,6 +192,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-105',
       name: 'Karthik Reddy',
+      eventId: 'EVT-2026',
       email: 'karthik.r@college.edu',
       contact: '9845011205',
       preferredTasks: 'Food Management, Crowd Management',
@@ -202,6 +207,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-106',
       name: 'Meera Krishnan',
+      eventId: 'EVT-2026',
       email: 'meera.k@college.edu',
       contact: '9845011206',
       preferredTasks: 'Technical Support, Stage Management',
@@ -216,6 +222,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-107',
       name: 'Vikramaditya Rao',
+      eventId: 'EVT-2026',
       email: 'vikram.rao@college.edu',
       contact: '9845011207',
       preferredTasks: 'Stage Management',
@@ -230,6 +237,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-108',
       name: 'Sneha Deshmukh',
+      eventId: 'EVT-2026',
       email: 'sneha.d@college.edu',
       contact: '9845011208',
       preferredTasks: 'Stage Management, Hospitality',
@@ -244,6 +252,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-109',
       name: 'Siddharth Verma',
+      eventId: 'EVT-2026',
       email: 'sid.verma@college.edu',
       contact: '9845011209',
       preferredTasks: 'Crowd Management',
@@ -258,6 +267,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-110',
       name: 'Neha Joshi',
+      eventId: 'EVT-2026',
       email: 'neha.joshi@college.edu',
       contact: '9845011210',
       preferredTasks: 'Hospitality, Registration Management',
@@ -272,6 +282,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-111',
       name: 'Aditya Menon',
+      eventId: 'EVT-2026',
       email: 'aditya.m@college.edu',
       contact: '9845011211',
       preferredTasks: 'Hospitality, Stage Management',
@@ -286,6 +297,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-112',
       name: 'Ishaan Patel',
+      eventId: 'EVT-2026',
       email: 'ishaan.p@college.edu',
       contact: '9845011212',
       preferredTasks: 'Photography, Technical Support',
@@ -300,6 +312,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-113',
       name: 'Pooja Bhat',
+      eventId: 'EVT-2026',
       email: 'pooja.bhat@college.edu',
       contact: '9845011213',
       preferredTasks: 'Food Management, Certificate Distribution',
@@ -314,6 +327,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-114',
       name: 'Arjun Subramanian',
+      eventId: 'EVT-2026',
       email: 'arjun.s@college.edu',
       contact: '9845011214',
       preferredTasks: 'Technical Support',
@@ -328,6 +342,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-115',
       name: 'Tanvi Agarwal',
+      eventId: 'EVT-2026',
       email: 'tanvi.a@college.edu',
       contact: '9845011215',
       preferredTasks: 'Crowd Management, Food Management',
@@ -342,6 +357,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-116',
       name: 'Rahul Saxena',
+      eventId: 'EVT-2026',
       email: 'rahul.s@college.edu',
       contact: '9845011216',
       preferredTasks: 'Technical Support, Photography',
@@ -356,6 +372,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-117',
       name: 'Kavya Hegde',
+      eventId: 'EVT-2026',
       email: 'kavya.h@college.edu',
       contact: '9845011217',
       preferredTasks: 'Certificate Distribution, Registration Management',
@@ -370,6 +387,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-118',
       name: 'Nikhil Bansal',
+      eventId: 'EVT-2026',
       email: 'nikhil.b@college.edu',
       contact: '9845011218',
       preferredTasks: 'Crowd Management, Food Management',
@@ -385,6 +403,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-119',
       name: 'Shruti Chatterjee',
+      eventId: 'EVT-2026',
       email: 'shruti.c@college.edu',
       contact: '9845011219',
       preferredTasks: 'Food Management, Hospitality',
@@ -399,6 +418,7 @@ export const initialSeedDatabase: AppDatabase = {
     {
       id: 'VOL-120',
       name: 'Devansh Malhotra',
+      eventId: 'EVT-2026',
       email: 'devansh.m@college.edu',
       contact: '9845011220',
       preferredTasks: 'Technical Support',

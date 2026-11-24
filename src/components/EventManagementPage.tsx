@@ -203,6 +203,7 @@ export function EventManagementPage({
         <div className="lg:col-span-2 space-y-4">
           {db.events.map((ev) => {
             const isActive = ev.id === db.activeEventId;
+            const volunteerCount = db.volunteers.filter((v) => v.eventId === ev.id).length;
             const taskCount = db.tasks.filter((t) => t.eventId === ev.id).length;
             const allocCount = db.allocations.filter((a) => a.eventId === ev.id).length;
 
@@ -237,7 +238,7 @@ export function EventManagementPage({
                         {ev.venue}
                       </span>
                       <span className="font-mono tabular-nums">
-                        {taskCount} tasks · {allocCount} allocations
+                        {volunteerCount} volunteers · {taskCount} tasks · {allocCount} allocations
                       </span>
                     </div>
                     {ev.description && (

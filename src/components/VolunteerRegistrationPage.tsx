@@ -100,6 +100,7 @@ export function VolunteerRegistrationPage({
       } else {
         const res = await api.createVolunteer({
           id: formId || undefined,
+          eventId: db.activeEventId,
           name: formName,
           email: formEmail,
           contact: formContact,
@@ -177,7 +178,8 @@ export function VolunteerRegistrationPage({
     }
   };
 
-  const filtered = db.volunteers.filter((v) => {
+  const eventVolunteers = db.volunteers.filter((v) => v.eventId === db.activeEventId);
+  const filtered = eventVolunteers.filter((v) => {
     const matchesAvail =
       availabilityFilter === 'All' || v.availability === availabilityFilter;
     const q = searchQuery.trim().toLowerCase();

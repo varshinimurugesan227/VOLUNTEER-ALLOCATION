@@ -96,6 +96,7 @@ export default function App() {
   const handleEventSwitch = async (eventId: string) => {
     try {
       const res = await api.activateEvent(eventId);
+      setSelectedTaskForAlloc(undefined);
       handleStateChange(res.db, res.liveStats);
       notify('Switched active event.');
     } catch (err) {
@@ -105,7 +106,9 @@ export default function App() {
 
   const activeNavLabel = NAV_ITEMS.find((n) => n.id === activeNav)?.label || 'Overview';
   const reassignmentCount =
-    db?.volunteers.filter((v) => v.status === 'Reassignment Requested').length || 0;
+    db?.volunteers.filter(
+      (v) => v.eventId === db.activeEventId && v.status === 'Reassignment Requested'
+    ).length || 0;
 
   if (loading) {
     return (

@@ -30,6 +30,7 @@ export interface EventRecord {
 
 export interface VolunteerRecord {
   id: string;
+  eventId: string;
   name: string;
   email: string;
   contact: string;

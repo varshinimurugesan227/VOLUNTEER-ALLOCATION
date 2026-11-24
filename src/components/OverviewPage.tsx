@@ -13,7 +13,7 @@ export function OverviewPage({ db, liveStats, onNavigate }: OverviewPageProps) {
   const s = liveStats.summary;
   const eventTasks = db.tasks.filter((t) => t.eventId === activeEvent?.id);
   const reassignmentRequests = db.volunteers.filter(
-    (v) => v.status === 'Reassignment Requested'
+    (v) => v.eventId === activeEvent?.id && v.status === 'Reassignment Requested'
   );
   const recentAllocations = db.allocations
     .filter((a) => a.eventId === activeEvent?.id)

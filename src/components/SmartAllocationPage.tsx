@@ -46,10 +46,11 @@ export function SmartAllocationPage({
   }, [initialTaskId]);
 
   useEffect(() => {
-    if (!selectedTaskId && eventTasks.length > 0) {
-      setSelectedTaskId(eventTasks[0].id);
+    if (!eventTasks.some((t) => t.id === selectedTaskId)) {
+      setSelectedTaskId(eventTasks[0]?.id || '');
+      setRecData(null);
     }
-  }, [eventTasks, selectedTaskId]);
+  }, [db.activeEventId, eventTasks, selectedTaskId]);
 
   const fetchRecommendations = async (taskId: string) => {
     if (!taskId) return;
@@ -106,7 +107,7 @@ export function SmartAllocationPage({
   const selectedTask = eventTasks.find((t) => t.id === selectedTaskId);
   const selectedStaff = liveStats.taskStaffing.find((s) => s.taskId === selectedTaskId);
   const assignedToSelectedTask = db.volunteers.filter(
-    (v) => v.assignedTaskId === selectedTaskId
+    (v) => v.eventId === db.activeEventId && v.assignedTaskId === selectedTaskId
   );
 
   return (
@@ -159,19 +160,24 @@ export function SmartAllocationPage({
                 </label>
                 <select
                   value={selectedTaskId}
+                  disabled={eventTasks.length === 0}
                   onChange={(e) => setSelectedTaskId(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-900"
+                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white text-slate-900 disabled:bg-slate-100"
                 >
-                  {eventTasks.map((t) => {
-                    const st = liveStats.taskStaffing.find((x) => x.taskId === t.id);
-                    const needLabel =
-                      st && st.needed > 0 ? ` — Needs ${st.needed}` : ' — Staffed';
-                    return (
-                      <option key={t.id} value={t.id}>
-                        {t.name} ({t.id}){needLabel}
-                      </option>
-                    );
-                  })}
+                  {eventTasks.length === 0 ? (
+                    <option value="">No tasks available in this event</option>
+                  ) : (
+                    eventTasks.map((t) => {
+                      const st = liveStats.taskStaffing.find((x) => x.taskId === t.id);
+                      const needLabel =
+                        st && st.needed > 0 ? ` — Needs ${st.needed}` : ' — Staffed';
+                      return (
+                        <option key={t.id} value={t.id}>
+                          {t.name} ({t.id}){needLabel}
+                        </option>
+                      );
+                    })
+                  )}
                 </select>
               </div>
 
@@ -246,7 +252,18 @@ export function SmartAllocationPage({
                 </div>
               )}
 
-              {!loadingRec && recData && recData.candidates.length === 0 && (
+              {!selectedTaskId && (
+                <div className="py-8 px-4 bg-slate-50 border border-slate-200 rounded-lg text-center space-y-1">
+                  <p className="text-sm font-medium text-slate-900">
+                    No tasks configured for this event yet
+                  </p>
+                  <p className="text-xs text-slate-600">
+                    Add tasks in Task Management and register volunteers for this event to run C Skill-Based Matching.
+                  </p>
+                </div>
+              )}
+
+              {!loadingRec && selectedTaskId && recData && recData.candidates.length === 0 && (
                 <div className="py-8 px-4 bg-slate-50 border border-slate-200 rounded-lg text-center space-y-1">
                   <p className="text-sm font-medium text-slate-900">
                     No matching available volunteers found

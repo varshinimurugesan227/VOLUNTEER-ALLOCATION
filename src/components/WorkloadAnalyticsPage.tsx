@@ -146,6 +146,11 @@ export function WorkloadAnalyticsPage({ db, onNotify }: WorkloadAnalyticsPagePro
                 </div>
               );
             })}
+            {data && data.taskDistribution.length === 0 && (
+              <p className="py-8 text-center text-xs text-slate-500">
+                No tasks configured for this event yet.
+              </p>
+            )}
           </div>
         </div>
 
@@ -207,6 +212,11 @@ export function WorkloadAnalyticsPage({ db, onNotify }: WorkloadAnalyticsPagePro
                 </div>
               );
             })}
+            {data && data.volunteerWorkloads.length === 0 && (
+              <p className="py-8 text-center text-xs text-slate-500">
+                No volunteers registered for this event yet.
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -258,6 +268,13 @@ export function WorkloadAnalyticsPage({ db, onNotify }: WorkloadAnalyticsPagePro
                   </tr>
                 );
               })}
+              {data && data.volunteerWorkloads.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="py-10 text-center text-sm text-slate-500">
+                    No volunteer workload records exist for this event yet.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

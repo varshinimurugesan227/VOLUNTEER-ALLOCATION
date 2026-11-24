@@ -9,9 +9,11 @@ all: volunteer_engine test_runner
 
 volunteer_engine: $(CORE_OBJS) main.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	chmod 755 $@
 
 test_runner: $(CORE_OBJS) test_cases.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	chmod 755 $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

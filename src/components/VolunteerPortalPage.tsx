@@ -31,25 +31,31 @@ export function VolunteerPortalPage({
   const [reassignReason, setReassignReason] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const volunteer = db.volunteers.find(
+  const activeEvent = db.events.find((e) => e.id === db.activeEventId) || db.events[0];
+  const eventVolunteers = db.volunteers.filter((v) => v.eventId === db.activeEventId);
+  const eventTasks = db.tasks.filter((t) => t.eventId === db.activeEventId);
+
+  const volunteer = eventVolunteers.find(
     (v) => v.id.toLowerCase() === loggedInId.trim().toLowerCase()
   );
 
   const assignedTask = volunteer?.assignedTaskId
-    ? db.tasks.find((t) => t.id === volunteer.assignedTaskId)
+    ? eventTasks.find((t) => t.id === volunteer.assignedTaskId)
     : undefined;
 
   const history = volunteer
-    ? db.allocations.filter((a) => a.volunteerId === volunteer.id)
+    ? db.allocations.filter(
+        (a) => a.eventId === db.activeEventId && a.volunteerId === volunteer.id
+      )
     : [];
 
   const handleSignIn = (e: FormEvent) => {
     e.preventDefault();
-    const match = db.volunteers.find(
+    const match = eventVolunteers.find(
       (v) => v.id.toLowerCase() === volunteerIdInput.trim().toLowerCase()
     );
     if (!match) {
-      setLoginError(`Volunteer ID "${volunteerIdInput}" not found.`);
+      setLoginError(`Volunteer ID "${volunteerIdInput}" not found in ${activeEvent?.name || 'this event'}.`);
       return;
     }
     setLoginError('');
@@ -89,7 +95,7 @@ export function VolunteerPortalPage({
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Volunteer Self-Service Portal</h2>
             <p className="text-xs text-slate-500">
-              Sign in with your Volunteer ID to view shift instructions, check in, or update availability.
+              Active Event: <span className="font-medium text-slate-700">{activeEvent?.name}</span> · Sign in with your Volunteer ID to view shift instructions or update availability.
             </p>
           </div>
           {volunteer && (
@@ -128,7 +134,7 @@ export function VolunteerPortalPage({
             className="px-3 py-2.5 text-sm border border-slate-300 rounded-lg bg-white text-slate-700"
           >
             <option value="">Demo Quick Select...</option>
-            {db.volunteers.map((v) => (
+            {eventVolunteers.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.id} — {v.name} ({v.status})
               </option>
